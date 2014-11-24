@@ -1,18 +1,23 @@
-function [ alpha, b ] = SMO( C, tolerance, max_iteration, trainAttribute, trainLabel )
-%SMO 
+function [ alpha, b ] = SMO( C, tol, max_passes, trainAttribute, trainLabel )
+%SMO method from Paper "Fast Training of SVM using SMO" by John C. Platt
+% this is the main routine for SMO
 % written by Chao Fang
 
-alpha=rand(size(trainAttribute,1),1);
-alphaOld=rand(size(trainAttribute,1),1);
-b=0;
-iteration=0;
+
 m=size(trainAttribute,1);
-E=zeros(size(trainAttribute,1),1);
-while(iteration<max_iteration)
+alpha=zeros(m,1);%lagrangian multiplier
+alphaOld=zeros(m,1);
+b=0;%threshold for solution
+passes=0;
+E=zeros(m,1);
+
+while(passes<max_passes)
     num_changed_alphas=0;
+
     for i=1:m
         E(i)=f(trainAttribute(i,:),trainAttribute,trainLabel,alpha,b)-trainLabel(i);
-        if ((trainLabel(i)*E(i)<-tolerance && alpha(i)<C )||(trainLabel(i)*E(i)>tolerance && alpha(i)>0))
+        if ((trainLabel(i)*E(i)<-tol && alpha(i)<C )||...
+                (trainLabel(i)*E(i)>tol && alpha(i)>0))
             j=randi(m);
             while(j==i)
                 j=randi(m);
@@ -24,7 +29,8 @@ while(iteration<max_iteration)
             if trainLabel(i)~=trainLabel(j)
                 L=max(0,alpha(j)-alpha(i));
                 H=min(C,C+alpha(j)-alpha(i));
-            else
+            end
+            if trainLabel(i)==trainLabel(j)
                 L=max(0,alpha(i)+alpha(j)-C);
                 H=min(C,alpha(i)+alpha(j));
             end
@@ -68,16 +74,16 @@ while(iteration<max_iteration)
             else
                 b=(b1+b2)/2;
             end
-            num_changed_alphas=num_changed_alphas+1;
-        end
-    end
+            num_changed=num_changed+1;
+        end%end if
+    end%end for
     if num_changed_alphas==0
-        iteration=iteration+1;
+        passes=passes+1;
     else
-        iteration=0;
+        passes=0;
     end
-    disp(iteration)
-end
+    disp(passes)
+end%end while
 
 end
 
