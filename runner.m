@@ -18,6 +18,14 @@ testLabel=diabetes(testIndex,1);
 
 %% use SMO method
 max_iteration=10;
-tolerance=0.1;
+tolerance=0.01;
 C=1;
 [ alpha, b ] = SMO( C, tolerance, max_iteration, trainAttribute, trainLabel );
+
+
+
+
+%% use gradient descent method
+max_iteration=10;
+[ W ] = gradientDescent(  max_iteration, trainAttribute, trainLabel );
+
