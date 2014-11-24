@@ -1,20 +1,4 @@
-close all
-clear
-clc
-%set random generator seed
-rng(1);
-
-%% prepare training and testing dataset
-load diabetes
-
-trainIndex=1:round(0.8*size(diabetes,1));
-trainAttribute=diabetes(trainIndex,2:end);
-trainLabel=diabetes(trainIndex,1);
-
-testIndex=round(0.8*size(diabetes,1))+1:size(diabetes,1);
-testAttribute=diabetes(testIndex,2:end);
-testLabel=diabetes(testIndex,1);
-
+function [ W ] = gradientDescent(  max_iteration, trainAttribute, trainLabel )
 
 
 %% training phase
@@ -59,3 +43,4 @@ W=sum(alpha)-0.5* secondPart;
 
 %training accuracy:
 
+end
