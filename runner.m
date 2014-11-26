@@ -29,3 +29,8 @@ C=1;
 max_iteration=10;
 [ W ] = gradientDescent(  max_iteration, trainAttribute, trainLabel );
 
+
+
+%% SVM
+C=0;
+[alpha, lambda] = SVM(trainAttribute, trainLabel, C);
