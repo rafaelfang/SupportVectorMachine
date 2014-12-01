@@ -16,6 +16,19 @@ testAttribute=diabetes(testIndex,2:end);
 testLabel=diabetes(testIndex,1);
 
 
+
+trainAttribute=[ 1 2;
+                -2 -9;
+                -4 -2;
+                7 8;
+                11 17];
+trainAttribute=normc(trainAttribute);
+trainLabel=[1;
+    -1;
+    -1;
+    1;
+    1];
+
 %% initialization of SVM
 [m,k]=size(trainAttribute);
 alpha=rand(m,1);
@@ -28,27 +41,28 @@ eta=0.01;
 flag=1;
 while flag==1
     for i=1:m
-        val=eta*kernelFunction(trainAttribute(i),trainAttribute(i));
+        val=eta*kernelFunction(trainAttribute(i,:),trainAttribute(i,:));
         if(val>0&&val<2)
             flag=0;
             break;
         end
         sumVal=0;
         for j=1:m
-            sumVal=sumVal+alpha(j)*trainLabel(j)*kernelFunction(trainAttribute(i),trainAttribute(j));
+            sumVal=sumVal+alpha(j)*trainLabel(j)*kernelFunction(trainAttribute(i,:),trainAttribute(j,:));
         end
         beta=alpha(i)+eta*(1-trainLabel(i)*sumVal);
         alpha(i)=beta*sign(beta);
+        disp(i)
     end
     
-
+    
 
 end
 %% get overall cost
 costAll=0;
 for i=1:m
     for j=1:m
-        costAll=costAll+alpha(i)*alpha(j)*trainLabel(i)*trainLabel(j)*kernelFunction(trainAttribute(i),trainAttribute(j));
+        costAll=costAll+alpha(i)*alpha(j)*trainLabel(i)*trainLabel(j)*kernelFunction(trainAttribute(i,:),trainAttribute(j,:));
     end
 end
 H=sum(alpha)-(1/2)*costAll;
@@ -56,3 +70,8 @@ optimizedWeight=zeros(1,k);
 for i=1:m
    optimizedWeight=optimizedWeight+alpha(i)*trainLabel(i)*trainAttribute(i,:); 
 end
+
+
+trainAttribute*optimizedWeight';
+[-5 -5]*optimizedWeight'
+scatter(trainAttribute(:,1),trainAttribute(:,2));
