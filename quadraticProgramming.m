@@ -5,10 +5,15 @@ clc
 rng(1);
 
 load diabetes
-
-trainIndex=1:round(0.8*size(diabetes,1));
+trainPercentage=0.8;
+trainIndex=1:round(trainPercentage*size(diabetes,1));
 trainAttribute=diabetes(trainIndex,2:end);
 trainLabel=diabetes(trainIndex,1);
+
+testIndex=round(trainPercentage*size(diabetes,1))+1:size(diabetes,1);
+testAttribute=diabetes(testIndex,2:end);
+testLabel=diabetes(testIndex,1);  
+
 % trainAttribute=[ 0.5 0.5;
 %                 0.25 0.25;
 %                 1.5 1.5 ;
@@ -66,12 +71,10 @@ end
 trainAcc=sum(trainLabel(:)==predTrain(:))/N;
 
 %% testing Accuracy
-testIndex=round(0.8*size(diabetes,1))+1:size(diabetes,1);
-testAttribute=diabetes(testIndex,2:end);
-testLabel=diabetes(testIndex,1);    
+  
 predTest=zeros(size(testAttribute,1),1);
 for i=1:size(testAttribute,1)
-    predTest(i,1)=sign(w*trainAttribute(i,:)'+bVal);
+    predTest(i,1)=sign(w*testAttribute(i,:)'+bVal);
 end  
 
 testAcc=sum(testLabel(:)==predTest(:))/size(testAttribute,1);
