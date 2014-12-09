@@ -34,14 +34,14 @@ testLabel=diabetes(testIndex,1);
 % hold on
 % scatter(supportVectors(:,1),supportVectors(:,2),'r');
 
-svmStruct = fitcsvm(trainAttribute,trainLabel);
-
-[predTrain,score] = predict(svmStruct,trainAttribute);
-trainAcc=sum(trainLabel(:)==predTrain(:))/size(trainAttribute,1);
-
-
-[predTest,score] = predict(svmStruct,testAttribute);
-testAcc=sum(testLabel(:)==predTest(:))/size(testAttribute,1);
+% svmStruct = fitcsvm(trainAttribute,trainLabel);
+% 
+% [predTrain,score] = predict(svmStruct,trainAttribute);
+% trainAcc=sum(trainLabel(:)==predTrain(:))/size(trainAttribute,1);
+% 
+% 
+% [predTest,score] = predict(svmStruct,testAttribute);
+% testAcc=sum(testLabel(:)==predTest(:))/size(testAttribute,1);
 %% initialization of SVM
 [m,k]=size(trainAttribute);
 alpha=rand(m,1);
