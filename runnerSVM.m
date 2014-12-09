@@ -5,28 +5,28 @@ clc
 rng(1);
 
 %% prepare training and testing dataset
-% load diabetes
-% 
-% trainIndex=1:round(0.8*size(diabetes,1));
-% trainAttribute=diabetes(trainIndex,2:end);
-% trainLabel=diabetes(trainIndex,1);
-% 
-% testIndex=round(0.8*size(diabetes,1))+1:size(diabetes,1);
-% testAttribute=diabetes(testIndex,2:end);
-% testLabel=diabetes(testIndex,1);
-mu1 = [0 0];
-mu2 = [100 100];
-SIGMA = [1 1.5; 1.5 3];
-r1 = mvnrnd(mu1,SIGMA,100);
-r2 = mvnrnd(mu2,SIGMA,100);
-figure;
-scatter(r1(:,1),r1(:,2),'b');
-hold on
-scatter(r2(:,1),r2(:,2),'g');
-trainAttribute=[ r1;r2];
-                
-trainAttribute=normc(trainAttribute);
-trainLabel=[ones(100,1);-ones(100,1)];
+load diabetes
+
+trainIndex=1:round(0.8*size(diabetes,1));
+trainAttribute=diabetes(trainIndex,2:end);
+trainLabel=diabetes(trainIndex,1);
+
+testIndex=round(0.8*size(diabetes,1))+1:size(diabetes,1);
+testAttribute=diabetes(testIndex,2:end);
+testLabel=diabetes(testIndex,1);
+% mu1 = [0 0];
+% mu2 = [100 100];
+% SIGMA = [1 1.5; 1.5 3];
+% r1 = mvnrnd(mu1,SIGMA,100);
+% r2 = mvnrnd(mu2,SIGMA,100);
+% figure;
+% scatter(r1(:,1),r1(:,2),'b');
+% hold on
+% scatter(r2(:,1),r2(:,2),'g');
+% trainAttribute=[ r1;r2];
+%                 
+% trainAttribute=normc(trainAttribute);
+% trainLabel=[ones(100,1);-ones(100,1)];
     
 % [ alpha, b ] = SimplifiedSMO( .1, .1, 1000, trainAttribute, trainLabel )
 % supportVectors=trainAttribute(find(alpha~=0),:);
@@ -34,19 +34,25 @@ trainLabel=[ones(100,1);-ones(100,1)];
 % hold on
 % scatter(supportVectors(:,1),supportVectors(:,2),'r');
 
+svmStruct = fitcsvm(trainAttribute,trainLabel);
+
+[predTrain,score] = predict(svmStruct,trainAttribute);
+trainAcc=sum(trainLabel(:)==predTrain(:))/size(trainAttribute,1);
 
 
+[predTest,score] = predict(svmStruct,testAttribute);
+testAcc=sum(testLabel(:)==predTest(:))/size(testAttribute,1);
 %% initialization of SVM
 [m,k]=size(trainAttribute);
 alpha=rand(m,1);
-eta=2;
+eta=0.5;
 
 
 
 
 %% use gradient descent method
  flag=1;
- max_iter=100;
+ max_iter=1000;
  C=2;
  ourEps=0.01;
 counter=0;
@@ -69,7 +75,10 @@ while (flag==1)&&(counter<max_iter)
                 alphaNew=0;
             end
             
+                   disp (abs(alphaNew-alphaOld))
+                   
             if(abs(alphaNew-alphaOld)>ourEps)
+                   
                 alpha(i)=alphaNew;
                 flag=1;
             end
@@ -86,7 +95,7 @@ end
 
 % end
 %% get overall cost
-N=200;
+N=size(trainAttribute,1);
 w=0;
 b=zeros(N,1);
 for i=1:N
@@ -107,6 +116,12 @@ end
 trainAcc=sum(trainLabel(:)==predTrain(:))/N;
 
 %% color the alpha
-supportVectorIndex=find(alpha~=0);
-scatter(trainAttribute(supportVectorIndex,1),trainAttribute(supportVectorIndex,2),'r');
+% supportVectorIndex=find(alpha~=0);
+% scatter(trainAttribute(supportVectorIndex,1),trainAttribute(supportVectorIndex,2),'r');
+%% testing Accuray
+predTest=zeros(size(testAttribute,1),1);
+for i=1:size(testAttribute,1)
+    predTest(i,1)=sign(w*testAttribute(i,:)'+bVal);
+end
 
+testAcc=sum(testLabel(:)==predTest(:))/N;
